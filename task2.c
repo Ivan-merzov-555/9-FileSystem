@@ -173,9 +173,9 @@ void PaintPanel(int x, int y, int w, int h, Panel *p, int is_active) {
     
     if (is_active) attron(COLOR_PAIR(4) | A_BOLD);
     mvhline(y, x, ' ', w);
-    PrintStInfo(y, x, "+");
+    mvprintw(y, x, "+");
     for (int i = 1; i < w-1; i++) mvaddch(y, x+i, '-');
-    PrintStInfo(y, x+w-1, "+");
+    mvprintw(y, x+w-1, "+");
 
     for (int i = 1; i < h-1; i++) {
         mvaddch(y+i, x, '|');
@@ -183,9 +183,9 @@ void PaintPanel(int x, int y, int w, int h, Panel *p, int is_active) {
     }
 
     mvhline(y+h-1, x, ' ', w);
-    PrintStInfo(y+h-1, x, "+");
+    mvprintw(y+h-1, x, "+");
     for (int i = 1; i < w-1; i++) mvaddch(y+h-1, x+i, '-');
-    PrintStInfo(y+h-1, x+w-1, "+");
+    mvprintw(y+h-1, x+w-1, "+");
     if (is_active) attroff(COLOR_PAIR(4) | A_BOLD);
 
     
@@ -196,13 +196,13 @@ void PaintPanel(int x, int y, int w, int h, Panel *p, int is_active) {
     } else {
         strcpy(path_disp, p->path);
     }
-    PrintStInfo(y, x+2, " %s ", path_disp);
+    mvprintw(y, x+2, " %s ", path_disp);
 
     
-    PrintStInfo(y+1, x+2, "Name");
-    PrintStInfo(y+1, x+27, "Size");
-    PrintStInfo(y+1, x+38, "Modify");
-    PrintStInfo(y+1, x+54, "Perms");
+    mvprintw(y+1, x+2, "Name");
+    mvprintw(y+1, x+27, "Size");
+    mvprintw(y+1, x+38, "Modify");
+    mvprintw(y+1, x+54, "Perms");
 
     
     int line = y+2;
@@ -220,14 +220,14 @@ void PaintPanel(int x, int y, int w, int h, Panel *p, int is_active) {
         strncpy(name_disp, p->entries[i].name, 20);
         name_disp[20] = '\0';
         if (p->entries[i].is_dir && strcmp(name_disp, "..") != 0) {
-            PrintStInfo(line, x+2, "/%-19s", name_disp+1);
+            mvprintw(line, x+2, "/%-19s", name_disp+1);
         } else {
-            PrintStInfo(line, x+2, " %-19s", name_disp);
+            mvprintw(line, x+2, " %-19s", name_disp);
         }
 
-        PrintStInfo(line, x+27, "%-8s", p->entries[i].size);
-        PrintStInfo(line, x+38, "%-12s", p->entries[i].modTime);
-        PrintStInfo(line, x+54, "%s", p->entries[i].perms);
+        mvprintw(line, x+27, "%-8s", p->entries[i].size);
+        mvprintw(line, x+38, "%-12s", p->entries[i].modTime);
+        mvprintw(line, x+54, "%s", p->entries[i].perms);
 
         if (i == p->selected) attroff(A_REVERSE);
         else {
@@ -294,20 +294,20 @@ void ShowFileInfo(Panel *p) {
     if (p->selected == 0) return;
     FileEntry *e = &p->entries[p->selected];
     clear();
-    PrintStInfo(2, 2, "File Information:");
-    PrintStInfo(4, 4, "Name: %s", e->name);
-    PrintStInfo(5, 4, "Path: %s/%s", p->path, e->name);
+    mvprintw(2, 2, "File Information:");
+    mvprintw(4, 4, "Name: %s", e->name);
+    mvprintw(5, 4, "Path: %s/%s", p->path, e->name);
   
-    PrintStInfo(6, 4, "Size: %lld bytes", (long long)e->SizeFile);
-    PrintStInfo(7, 4, "Permissions: %s", e->perms);
-    PrintStInfo(8, 4, "Modified: %s", e->modTime);
-    PrintStInfo(10, 2, "Press any key...");
+    mvprintw(6, 4, "Size: %lld bytes", (long long)e->SizeFile);
+    mvprintw(7, 4, "Permissions: %s", e->perms);
+    mvprintw(8, 4, "Modified: %s", e->modTime);
+    mvprintw(10, 2, "Press any key...");
     refresh();
     getch();
 }
 
 int confirm(const char *msg) {
-    PrintStInfo(term_rows-3, 2, "%s (y/n): ", msg);
+    mvprintw(term_rows-3, 2, "%s (y/n): ", msg);
     refresh();
     int ch = getch();
     return (ch == 'y' || ch == 'Y');
@@ -316,7 +316,7 @@ int confirm(const char *msg) {
 void input_str(const char *prompt, char *buf, int len) {
     echo();
     curs_set(1);
-    PrintStInfo(term_rows-3, 2, "%s: ", prompt);
+    mvprintw(term_rows-3, 2, "%s: ", prompt);
     refresh();
     getnstr(buf, len-1);
     noecho();
@@ -345,9 +345,9 @@ int main() {
 
         PaintPanel(1, 1, panel_w, panel_h, &left, active_panel == 0);
         PaintPanel(panel_w + 4, 1, panel_w, panel_h, &right, active_panel == 1);
-        PrintStInfo(term_rows-3, 1,
+        mvprintw(term_rows-3, 1,
                  "F1:Help  F3:View  F5:Copy  F6:Move  F7:Mkdir  F8:Delete  F9:Info  F10:Quit");
-        PrintStInfo(term_rows-2, 1, "Tab - switch panels, Enter - open, Backspace - up, q - quit");
+        mvprintw(term_rows-2, 1, "Tab - switch panels, Enter - open, Backspace - up, q - quit");
         refresh();
 
         ch = getch();
